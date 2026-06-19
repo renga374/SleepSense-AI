@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SleepSense AI{% endblock %}
+
+{% block head %}
+<style>
+  .chart-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .chart-card .card-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: linear-gradient(to right, #f5f3ff, #f0f9ff); display: flex; align-items: center; gap: .5rem; }
+  .chart-card .card-header h3 { font-family: 'Poppins',sans-serif; font-weight: 600; font-size: .95rem; color: #3730a3; }
+  .chart-body { padding: 1.25rem; }
+  .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
+  .no-data { text-align:center; padding:3rem; color:var(--text-muted); }
+  .no-data .big { font-size:3rem; margin-bottom:.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1>📊 Analytics Dashboard</h1>
+  <p>Visual insights into your sleep patterns over time</p>
+</div>
+
+<div class="container">
+
+  <!-- KPI Row -->
+  <div class="stat-grid" style="margin-bottom:2rem;">
+    <div class="stat-card">
+      <div class="stat-icon">🔮</div>
+      <div class="stat-value">{{ total_preds }}</div>
+      <div class="stat-label">Total Predictions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-value">{{ avg_score }}</div>
+      <div class="stat-label">Average Sleep Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value">{{ quality_counts.Good }}</div>
+      <div class="stat-label">Good Nights</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔶</div>
+      <div class="stat-value">{{ quality_counts.Average }}</div>
+      <div class="stat-label">Average Nights</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-value">{{ quality_counts.Poor }}</div>
+      <div class="stat-label">Poor Nights</div>
+    </div>
+  </div>
+
+  {% if total_preds == 0 %}
+  <div class="card">
+    <div class="no-data">
+      <div class="big">🌙</div>
+      <p style="font-size:1.1rem;font-weight:600;color:#1e293b;margin-bottom:.5rem;">No predictions yet</p>
+      <p>Make your first prediction to start seeing analytics.</p>
+      <a href="/" class="btn btn-primary" style="margin-top:1rem;">🔮 Predict Now</a>
+    </div>
+  </div>
+  {% else %}
+
+  <div class="charts-grid">
+
+    <!-- Quality Distribution Pie -->
+    <div class="chart-card">
+      <div class="card-header"><span>🥧</span><h3>Sleep Quality Distribution</h3></div>
+      <div class="chart-body"><canvas id="qualityPie" height="220"></canvas></div>
+    </div>
+
+    <!-- Weekly trend line -->
+    <div class="chart-card">
+      <div class="card-header"><span>📈</span><h3>Weekly Sleep Score Trend</h3></div>
+      <div class="chart-body"><canvas id="weeklyLine" height="220"></canvas></div>
+    </div>
+
+    <!-- Stress vs Sleep Score -->
+    <div class="chart-card">
+      <div class="card-header"><span>🧠</span><h3>Stress Level vs Avg Sleep Score</h3></div>
+      <div class="chart-body"><canvas id="stressBar" height="220"></canvas></div>
+    </div>
+
+    <!-- Screen time vs Sleep -->
+    <div class="chart-card">
+      <div class="card-header"><span>📱</span><h3>Screen Time vs Avg Sleep Score</h3></div>
+      <div class="chart-body"><canvas id="screenBar" height="220"></canvas></div>
+    </div>
+
+    <!-- Exercise vs Sleep -->
+    <div class="chart-card">
+      <div class="card-header"><span>🏃</span><h3>Exercise Duration vs Avg Sleep Score</h3></div>
+      <div class="chart-body"><canvas id="exerciseBar" height="220"></canvas></div>
+    </div>
+
+    <!-- Quality bar -->
+    <div class="chart-card">
+      <div class="card-header"><span>📊</span><h3>Quality Count Breakdown</h3></div>
+      <div class="chart-body"><canvas id="qualityBar" height="220"></canvas></div>
+    </div>
+
+  </div><!-- /charts-grid -->
+
+  <div style="margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem;">
+    <!-- EDA images from training -->
+    {% set eda_imgs = [
+      ('quality_dist.png','Quality Distribution'),
+      ('duration_quality.png','Duration by Quality'),
+      ('stress_quality.png','Stress vs Quality'),
+      ('correlation.png','Feature Correlations'),
+      ('screentime_score.png','Screen Time vs Score'),
+      ('exercise_score.png','Exercise vs Score'),
+      ('model_comparison.png','Model Comparison'),
+      ('confusion_matrix.png','Confusion Matrix'),
+      ('feature_importance.png','Feature Importance')
+    ] %}
+    {% for fname, title in eda_imgs %}
+    <div class="chart-card">
+      <div class="card-header"><span>🔬</span><h3>{{ title }}</h3></div>
+      <div class="chart-body" style="padding:.75rem;">
+        <img src="/static/images/{{ fname }}" alt="{{ title }}"
+             style="width:100%;border-radius:8px;"/>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% endif %}
+</div><!-- /container -->
+
+<script>
+const cd = {{ chart_data|safe }};
+
+// Colour palette
+const clrGood='#10b981', clrAvg='#f59e0b', clrPoor='#ef4444';
+const clrPrimary='#4f46e5', clrSecondary='#7c3aed';
+const gridColor='rgba(0,0,0,.06)';
+
+Chart.defaults.font.family = "'Roboto', sans-serif";
+Chart.defaults.color = '#64748b';
+
+// 1 — Quality Pie
+new Chart(document.getElementById('qualityPie'), {
+  type: 'doughnut',
+  data: {
+    labels: cd.quality_labels,
+    datasets: [{ data: cd.quality_values, backgroundColor:[clrGood,clrAvg,clrPoor], borderWidth:3, borderColor:'#fff', hoverOffset:6 }]
+  },
+  options: { plugins: { legend: { position:'bottom' } }, cutout:'65%' }
+});
+
+// 2 — Weekly line
+new Chart(document.getElementById('weeklyLine'), {
+  type:'line',
+  data: {
+    labels: cd.weekly_labels.length ? cd.weekly_labels : ['No data yet'],
+    datasets: [{
+      label:'Avg Sleep Score', data: cd.weekly_avgs,
+      borderColor: clrPrimary, backgroundColor:'rgba(79,70,229,.1)',
+      fill:true, tension:.4, pointRadius:5, pointBackgroundColor:clrPrimary
+    }]
+  },
+  options: {
+    plugins:{legend:{display:false}},
+    scales:{
+      y:{min:0,max:100,grid:{color:gridColor}},
+      x:{grid:{color:gridColor}}
+    }
+  }
+});
+
+// 3 — Stress bar
+new Chart(document.getElementById('stressBar'), {
+  type:'bar',
+  data:{
+    labels: cd.stress_labels,
+    datasets:[{ label:'Avg Score', data:cd.stress_avgs, backgroundColor:[clrGood,clrAvg,clrPoor], borderRadius:6 }]
+  },
+  options:{ plugins:{legend:{display:false}}, scales:{ y:{min:0,max:100,grid:{color:gridColor}}, x:{grid:{display:false}} } }
+});
+
+// 4 — Screen time bar
+new Chart(document.getElementById('screenBar'), {
+  type:'bar',
+  data:{
+    labels: cd.screen_labels.map(l=>l+' min'),
+    datasets:[{ label:'Avg Score', data:cd.screen_avgs, backgroundColor:[clrGood,clrAvg,'#fb923c',clrPoor], borderRadius:6 }]
+  },
+  options:{ plugins:{legend:{display:false}}, scales:{ y:{min:0,max:100,grid:{color:gridColor}}, x:{grid:{display:false}} } }
+});
+
+// 5 — Exercise bar
+new Chart(document.getElementById('exerciseBar'), {
+  type:'bar',
+  data:{
+    labels: cd.exercise_labels.map(l=>l+' min'),
+    datasets:[{ label:'Avg Score', data:cd.exercise_avgs, backgroundColor:[clrPoor,clrAvg,clrGood,'#0891b2'], borderRadius:6 }]
+  },
+  options:{ plugins:{legend:{display:false}}, scales:{ y:{min:0,max:100,grid:{color:gridColor}}, x:{grid:{display:false}} } }
+});
+
+// 6 — Quality count bar
+new Chart(document.getElementById('qualityBar'), {
+  type:'bar',
+  data:{
+    labels: cd.quality_labels,
+    datasets:[{ label:'Count', data:cd.quality_values, backgroundColor:[clrGood,clrAvg,clrPoor], borderRadius:6 }]
+  },
+  options:{ plugins:{legend:{display:false}}, scales:{ y:{grid:{color:gridColor}}, x:{grid:{display:false}} } }
+});
+</script>
+{% endblock %}

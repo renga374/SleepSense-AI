@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% block title %}SleepAnalyzer AI{% endblock %}
+
+{% block content %}
+
+<style>
+
+body{
+background:#0b1120;
+font-family:'Poppins',sans-serif;
+color:white;
+overflow-x:hidden;
+}
+
+/* Background */
+
+.bg-orb{
+position:fixed;
+border-radius:50%;
+filter:blur(120px);
+z-index:-1;
+opacity:.4;
+}
+
+.orb1{
+width:350px;
+height:350px;
+background:#6366f1;
+top:-100px;
+left:-100px;
+}
+
+.orb2{
+width:300px;
+height:300px;
+background:#22c55e;
+right:-100px;
+top:100px;
+}
+
+.orb3{
+width:250px;
+height:250px;
+background:#06b6d4;
+bottom:-100px;
+left:40%;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:40px 20px;
+}
+
+.hero{
+text-align:center;
+margin-bottom:40px;
+}
+
+.hero h1{
+font-size:4rem;
+font-weight:800;
+background:linear-gradient(90deg,#22c55e,#6366f1);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.hero p{
+font-size:1.1rem;
+color:#94a3b8;
+margin-top:10px;
+}
+
+/* Glass Card */
+
+.form-card{
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.08);
+border-radius:30px;
+padding:40px;
+box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+
+/* Grid */
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+
+/* Inputs */
+
+.input-group{
+display:flex;
+flex-direction:column;
+}
+
+.input-group label{
+margin-bottom:8px;
+font-weight:600;
+color:#cbd5e1;
+}
+
+input,
+select{
+width:100%;
+padding:14px;
+border-radius:15px;
+border:1px solid rgba(255,255,255,.08);
+background:rgba(255,255,255,.05);
+color:white;
+font-size:15px;
+outline:none;
+transition:.3s;
+}
+
+input:focus,
+select:focus{
+border-color:#6366f1;
+box-shadow:0 0 20px rgba(99,102,241,.3);
+}
+
+select option{
+background:#0f172a;
+}
+
+/* Slider */
+
+.slider-container{
+grid-column:1/-1;
+}
+
+.slider-value{
+font-size:1.2rem;
+font-weight:700;
+color:#22c55e;
+margin-top:10px;
+}
+
+input[type=range]{
+accent-color:#22c55e;
+}
+
+/* Button */
+
+.predict-btn{
+width:100%;
+padding:18px;
+margin-top:30px;
+border:none;
+border-radius:20px;
+font-size:18px;
+font-weight:700;
+cursor:pointer;
+background:linear-gradient(90deg,#6366f1,#22c55e);
+color:white;
+transition:.3s;
+}
+
+.predict-btn:hover{
+transform:translateY(-3px);
+box-shadow:0 10px 30px rgba(99,102,241,.4);
+}
+
+/* Features */
+
+.features{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-top:40px;
+}
+
+.feature{
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+padding:25px;
+border-radius:20px;
+text-align:center;
+transition:.3s;
+}
+
+.feature:hover{
+transform:translateY(-8px);
+}
+
+.feature h3{
+margin:10px 0;
+}
+
+.feature p{
+font-size:14px;
+color:#94a3b8;
+}
+
+</style>
+
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<div class="container">
+
+<div class="hero">
+<h1>🧠 SleepAnalyzer AI</h1>
+<p>
+Advanced Machine Learning Sleep Intelligence System
+</p>
+</div>
+
+<div class="form-card">
+
+<form method="POST" action="/predict">
+
+<div class="form-grid">
+
+<div class="input-group">
+<label>😴 Sleep Duration (Hours)</label>
+<input type="number" step="0.5" name="sleep_duration" required>
+</div>
+
+<div class="input-group">
+<label>🌙 Bedtime</label>
+<input type="time" name="bedtime_hour" required>
+</div>
+
+<div class="input-group">
+<label>☀ Wake Time</label>
+<input type="time" name="wake_hour" required>
+</div>
+
+<div class="input-group">
+<label>☕ Caffeine Intake</label>
+<select name="caffeine_intake">
+<option>None</option>
+<option>Low</option>
+<option>Moderate</option>
+<option>High</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>🏃 Exercise Duration (min)</label>
+<input type="number" name="exercise_duration" required>
+</div>
+
+<div class="input-group">
+<label>📱 Screen Time Before Bed</label>
+<input type="number" name="screen_time_before_bed" required>
+</div>
+
+<div class="input-group">
+<label>😊 Mood Before Sleep</label>
+<select name="mood_before_sleep">
+<option>Happy</option>
+<option>Neutral</option>
+<option>Sad</option>
+<option>Anxious</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>🔄 Sleep Interruptions</label>
+<select name="sleep_interruptions">
+<option>No</option>
+<option>Yes</option>
+</select>
+</div>
+
+<div class="slider-container">
+<label>🧠 Stress Level: <span id="stressValue">5</span>/10</label>
+<input
+type="range"
+name="stress_level"
+min="0"
+max="10"
+value="5"
+oninput="stressValue.innerText=this.value">
+</div>
+
+</div>
+
+<button class="predict-btn" type="submit">
+🚀 Analyze My Sleep
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

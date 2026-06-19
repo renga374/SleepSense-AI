@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}ML Analytics — SleepSense AI{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1>🔬 ML Analytics &amp; EDA</h1>
+  <p>Exploratory data analysis and model performance from the training pipeline</p>
+</div>
+
+<div class="container">
+
+  <!-- Section: EDA Visualisations -->
+  <h2 style="font-family:'Poppins',sans-serif;font-weight:700;color:#1e293b;margin-bottom:1rem;font-size:1.2rem;">
+    📊 Dataset Exploratory Analysis
+  </h2>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem;margin-bottom:2.5rem;">
+    <div class="card">
+      <div class="card-header"><span>🥧</span><h3>Quality Distribution</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/quality_dist.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>💤</span><h3>Sleep Duration by Quality</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/duration_quality.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>🧠</span><h3>Stress Level vs Quality</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/stress_quality.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>🔥</span><h3>Feature Correlation Matrix</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/correlation.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>📱</span><h3>Screen Time vs Sleep Score</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/screentime_score.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>🏃</span><h3>Exercise vs Sleep Score</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/exercise_score.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+  </div>
+
+  <!-- Section: Model Performance -->
+  <h2 style="font-family:'Poppins',sans-serif;font-weight:700;color:#1e293b;margin-bottom:1rem;font-size:1.2rem;">
+    🤖 Model Performance
+  </h2>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem;">
+    <div class="card">
+      <div class="card-header"><span>📊</span><h3>Model Accuracy Comparison</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/model_comparison.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>🔲</span><h3>Confusion Matrix — Best Model</h3></div>
+      <div class="card-body" style="padding:.75rem;"><img src="/static/images/confusion_matrix.png" style="width:100%;border-radius:8px;"/></div>
+    </div>
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-header"><span>🏅</span><h3>Feature Importance (Random Forest)</h3></div>
+      <div class="card-body" style="padding:.75rem;">
+        <img src="/static/images/feature_importance.png" style="width:100%;max-width:700px;border-radius:8px;display:block;margin:0 auto;"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model info table -->
+  <div class="card" style="margin-top:2rem;">
+    <div class="card-header"><span>📋</span><h2>Trained Models Summary</h2></div>
+    <div class="card-body" style="padding:0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Test Accuracy</th>
+              <th>CV Mean</th>
+              <th>CV Std</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🔵 Logistic Regression</td>
+              <td style="font-weight:600;">~73.3%</td>
+              <td>~70.9%</td><td>±0.9%</td>
+              <td><span class="quality-badge badge-average">Evaluated</span></td>
+            </tr>
+            <tr>
+              <td>🌲 Decision Tree</td>
+              <td style="font-weight:600;">~71.3%</td>
+              <td>~66.7%</td><td>±0.9%</td>
+              <td><span class="quality-badge badge-average">Evaluated</span></td>
+            </tr>
+            <tr>
+              <td>🌳 Random Forest</td>
+              <td style="font-weight:600;">~79.5%</td>
+              <td>~76.5%</td><td>±1.7%</td>
+              <td><span class="quality-badge badge-good">Evaluated</span></td>
+            </tr>
+            <tr>
+              <td>⚡ SVM</td>
+              <td style="font-weight:600;">~81.8%</td>
+              <td>~77.9%</td><td>±1.2%</td>
+              <td><span class="quality-badge badge-good">✅ Best Model</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem;">
+    <a href="/" class="btn btn-primary">🔮 Make a Prediction</a>
+  </div>
+
+</div><!-- /container -->
+{% endblock %}

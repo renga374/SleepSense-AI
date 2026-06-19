@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Prediction History — SleepSense AI{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1>📋 Prediction History</h1>
+  <p>Track your sleep quality over time and monitor progress</p>
+</div>
+
+<div class="container">
+
+  {% if stats and stats['total'] %}
+  <div class="stat-grid" style="margin-bottom:2rem;">
+    <div class="stat-card">
+      <div class="stat-icon">🔮</div>
+      <div class="stat-value">{{ stats['total'] }}</div>
+      <div class="stat-label">Total Records</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-value">{{ "%.0f"|format(stats['avg_score'] or 0) }}</div>
+      <div class="stat-label">Average Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-value">{{ stats['max_score'] or 0 }}</div>
+      <div class="stat-label">Best Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📉</div>
+      <div class="stat-value">{{ stats['min_score'] or 0 }}</div>
+      <div class="stat-label">Lowest Score</div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if predictions %}
+  <div class="card">
+    <div class="card-header">
+      <span>📋</span>
+      <h2>Recent Predictions (last 50)</h2>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Date</th>
+              <th>Quality</th>
+              <th>Score</th>
+              <th>Confidence</th>
+              <th>Duration</th>
+              <th>Stress</th>
+              <th>Exercise</th>
+              <th>Screen</th>
+              <th>Mood</th>
+              <th>Caffeine</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in predictions %}
+            <tr>
+              <td style="color:#94a3b8;font-size:.78rem;">{{ p['id'] }}</td>
+              <td style="font-size:.82rem;white-space:nowrap;">{{ p['date'][:16] }}</td>
+              <td>
+                <span class="quality-badge
+                  {% if p['sleep_quality']=='Good' %}badge-good
+                  {% elif p['sleep_quality']=='Average' %}badge-average
+                  {% else %}badge-poor{% endif %}">
+                  {% if p['sleep_quality']=='Good' %}✅{% elif p['sleep_quality']=='Average' %}🔶{% else %}❌{% endif %}
+                  {{ p['sleep_quality'] }}
+                </span>
+              </td>
+              <td>
+                <div style="display:flex;align-items:center;gap:.5rem;">
+                  <div class="progress-bar-wrap" style="width:60px;">
+                    <div class="progress-bar-fill" style="width:{{ p['sleep_score'] }}%;background:
+                      {% if p['sleep_score']>=65 %}linear-gradient(90deg,#10b981,#34d399)
+                      {% elif p['sleep_score']>=40 %}linear-gradient(90deg,#f59e0b,#fbbf24)
+                      {% else %}linear-gradient(90deg,#ef4444,#f87171){% endif %};"></div>
+                  </div>
+                  <span style="font-weight:600;font-size:.85rem;">{{ p['sleep_score'] }}</span>
+                </div>
+              </td>
+              <td style="font-weight:600;">{{ p['confidence'] }}%</td>
+              <td>{{ p['sleep_duration'] }}h</td>
+              <td>
+                <span style="font-weight:600;color:
+                  {% if p['stress_level']<=3 %}#10b981{% elif p['stress_level']<=6 %}#f59e0b{% else %}#ef4444{% endif %}">
+                  {{ p['stress_level'] }}/10
+                </span>
+              </td>
+              <td>{{ p['exercise_duration']|int }}min</td>
+              <td>{{ p['screen_time_before_bed']|int }}min</td>
+              <td style="font-size:.82rem;">{{ p['mood_before_sleep'] }}</td>
+              <td style="font-size:.82rem;">{{ p['caffeine_intake'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="card" style="text-align:center;padding:3rem;">
+    <div style="font-size:3rem;margin-bottom:.75rem;">🌙</div>
+    <p style="font-size:1.1rem;font-weight:600;color:#1e293b;margin-bottom:.5rem;">No predictions yet</p>
+    <p style="color:#64748b;">Head back home and make your first sleep prediction.</p>
+    <a href="/" class="btn btn-primary" style="margin-top:1.25rem;display:inline-flex;">🔮 Predict Now</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
