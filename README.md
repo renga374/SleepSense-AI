@@ -1,120 +1,145 @@
-# 🌙 SleepSense AI — Sleep Quality Predictor
+# SleepSense AI 🌙
 
-> AI-Powered Sleep Quality Prediction and Personalised Wellness Recommendation System
+## Overview
 
-## 📋 Overview
+SleepSense AI is a machine learning-powered web application designed to predict sleep quality based on lifestyle, behavioral, and health-related factors. The system analyzes user inputs and generates sleep quality predictions, confidence scores, and personalized recommendations to help improve sleep habits.
 
-A complete Machine Learning web application that analyses lifestyle, behavioural, and physiological factors to predict sleep quality (Good / Average / Poor), generates a Sleep Score (0–100), and provides personalised wellness recommendations.
+This project demonstrates the practical application of Machine Learning, Data Analysis, and Full-Stack Web Development using Python and Flask.
 
-## 🏗️ Project Structure
+---
 
-```
-sleep_predictor/
-├── app.py                      ← Flask web application (main entry point)
-├── generate_and_train.py       ← ML pipeline: dataset, training, visualisations
-├── utils/
-│   └── predictor.py            ← Prediction engine & recommendation generator
-├── models/
-│   ├── sleep_model.pkl         ← Best trained model (SVM, ~81.8% accuracy)
-│   ├── scaler.pkl              ← Fitted StandardScaler
-│   └── meta.json               ← Model metadata & feature importance
+## Features
+
+* Sleep Quality Prediction (Good, Average, Poor)
+* AI-Based Sleep Score Generation
+* Confidence Score Analysis
+* Personalized Sleep Improvement Recommendations
+* Prediction History Management
+* Interactive Dashboard and Visualizations
+* SQLite Database Integration
+* User-Friendly Web Interface
+
+---
+
+## Technology Stack
+
+### Backend
+
+* Python
+* Flask
+* SQLite
+
+### Machine Learning
+
+* Scikit-Learn
+* Pandas
+* NumPy
+* Joblib
+
+### Frontend
+
+* HTML
+* CSS
+* JavaScript
+
+### Visualization
+
+* Matplotlib
+* Seaborn
+
+---
+
+## Project Structure
+
+```text
+SleepSense-AI/
+│
+├── app.py
+├── generate_and_train.py
+├── README.md
+├── requirements.txt
+│
 ├── data/
-│   ├── sleep_data.csv          ← Generated training dataset (2000 records)
-│   └── sleep_history.db        ← SQLite database for user predictions
+├── models/
 ├── static/
-│   └── images/                 ← EDA & model performance charts (PNG)
-└── templates/
-    ├── base.html               ← Base layout with navbar
-    ├── index.html              ← Home page & prediction form
-    ├── result.html             ← Prediction results dashboard
-    ├── dashboard.html          ← Analytics dashboard (Chart.js)
-    ├── history.html            ← Prediction history table
-    └── analytics.html          ← ML/EDA visualisations
+├── templates/
+├── utils/
+│
+└── sleep.db
 ```
 
-## ⚡ Quick Start
+---
 
-### 1. Install dependencies
+## Installation
+
+### Clone the Repository
+
 ```bash
-pip install flask scikit-learn pandas numpy matplotlib seaborn joblib
+git clone https://github.com/your-username/SleepSense-AI.git
+cd SleepSense-AI
 ```
 
-### 2. Train the model (already done — skip if models/ exists)
+### Install Dependencies
+
 ```bash
-python generate_and_train.py
+pip install -r requirements.txt
 ```
 
-### 3. Run the Flask app
+### Run the Application
+
 ```bash
 python app.py
 ```
 
-### 4. Open in browser
-```
+Open your browser and visit:
+
+```text
 http://127.0.0.1:5000
 ```
 
-## 🤖 ML Models Trained
+---
 
-| Model                | Test Accuracy | CV Mean  |
-|---------------------|--------------|---------|
-| Logistic Regression  | 73.3%        | 70.9%   |
-| Decision Tree        | 71.3%        | 66.7%   |
-| Random Forest        | 79.5%        | 76.5%   |
-| **SVM ✅ (best)**   | **81.8%**    | **77.9%** |
+## Machine Learning Workflow
 
-## 📥 Input Features
+1. Data Collection and Preprocessing
+2. Feature Engineering
+3. Model Training and Evaluation
+4. Model Selection
+5. Flask Integration
+6. Prediction and Recommendation Generation
 
-- Sleep Duration (hours)
-- Bedtime & Wake-up Time
-- Caffeine Intake (None / Low / Moderate / High)
-- Exercise Duration (minutes)
-- Screen Time Before Bed (minutes)
-- Stress Level (0–10 slider)
-- Mood Before Sleep (Happy / Neutral / Sad / Anxious)
-- Sleep Interruptions (Yes / No)
+---
+## Screenshots
+<img width="1365" height="715" alt="Screenshot 2026-06-17 193543" src="https://github.com/user-attachments/assets/30ff9724-213b-4573-8966-7f801b819569" />
+<img width="1365" height="719" alt="Screenshot 2026-06-17 193559" src="https://github.com/user-attachments/assets/62416909-8db7-48cf-8e77-ea01d484d95b" />
 
-## 📤 Output
 
-- **Sleep Quality**: Good / Average / Poor
-- **Sleep Score**: 0–100
-- **Confidence**: Percentage from model probability
-- **Class Probabilities**: Per-class breakdown
-- **Positive Factors**: What's helping your sleep
-- **Negative Factors**: What's hurting your sleep
-- **Personalised Recommendations**: Up to 6 specific, evidence-based tips
+## Key Learning Outcomes
 
-## 🗄️ Database
+* Machine Learning Model Development
+* Data Preprocessing and Analysis
+* Model Evaluation and Optimization
+* Flask Web Application Development
+* Database Management with SQLite
+* Data Visualization Techniques
+* End-to-End Project Deployment
 
-SQLite database (`data/sleep_history.db`) stores all predictions with:
-- Date/time, all input features
-- Sleep score, quality, confidence
-- Serialised recommendations
+---
 
-View history at `/history` and analytics at `/dashboard`.
+## Future Enhancements
 
-## 🎨 Tech Stack
+* Deep Learning Models
+* User Authentication
+* Mobile Application Support
+* Sleep Tracking Integration
+* Advanced Health Analytics
+* Cloud Deployment
 
-- **ML**: scikit-learn (LR, DT, RF, SVM), joblib
-- **Data**: pandas, numpy
-- **Visualisations**: matplotlib, seaborn, Chart.js
-- **Backend**: Flask, SQLite
-- **Frontend**: HTML5, CSS3, Poppins + Roboto fonts
-- **Charts**: Chart.js 4.4
+---
 
-## 📝 API Endpoint
+## Author
 
-`POST /api/predict` — JSON input, JSON output:
-```json
-{
-  "sleep_duration": 5,
-  "bedtime_hour": 1.0,
-  "wake_hour": 6.5,
-  "caffeine_intake": "High",
-  "exercise_duration": 0,
-  "screen_time_before_bed": 180,
-  "stress_level": 9,
-  "mood_before_sleep": "Anxious",
-  "sleep_interruptions": "Yes"
-}
-```
+**Renganathan V**
+
+B.Sc Computer Science Student
+
